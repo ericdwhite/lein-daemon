@@ -11,26 +11,31 @@ The keys of the daemon map are the names of services that can be started at the 
 
 Install
 =======
-lein daemon depends on the Apache Commons Daemon library. 
+add lein-daemon to your leiningen project file, **both as a regular dependency, AND a dev-dependency**::
 
-If you're using MacPorts, "sudo port install commons-daemon" 
+    :dependencies [[lein-daemon "0.2.1"]]
+    :dev-dependencies [[lein-daemon "0.2.1]]
+
+Lein-daemon requires this because it contains code that lein runs, and code that the launched process runs. 
+
+lein daemon also depends on the Apache Commons Daemon library. 
+
+If you're using MacPorts, "sudo port install commons-daemon"
 On Ubuntu, "sudo apt-get install jsvc" 
-
-Because lein-daemon contains code that lein runs, and code that the launched process runs, **you'll need to specify lein-daemon once in :dependencies, and again in :dev-dependencies **
 
 NS
 ==
 jsvc requires the service to be started with a class that implements the Daemon interface. Pre-compiling classes is a pain, so lein-daemon takes a clojure namespace with functions that "implement" the daemon interface, i.e. clojure functions (init [& cmdline-args]), (start []), (stop []) (destroy []). The :ns key specifies a clojure namespace that will be require'd, containing the functions init, start, stop, destroy. All functions except start are optional. 
 
-The Daemon interface is found at: http://commons.apache.org/daemon/apidocs/org/apache/commons/daemon/Daemon.html
+[More information on the Daemon interface here](http://commons.apache.org/daemon/apidocs/org/apache/commons/daemon/Daemon.html)
 
 Arguments
 =========
-:args is a list of arguments that will be passed to the init method. The arguments in the daemon map will be concatenated with the arguments on the command line.
+:args is a list of arguments that will be passed to the init method. Extra arguments on the command line will be appended to the end of args.
 
 Options
 =======
-:options is a map of options passed to jsvc. Keywords will be converted to the java argument format (:foo -> "-foo"). See the list at http://commons.apache.org/daemon/jsvc.html. For the options that don't take an argument, for example -nodetach, the value in the clojure map will be ignored. 
+:options is a map of options passed to jsvc. Keywords will be converted to the java argument format (:foo -> "-foo"). [See here for the list](http://commons.apache.org/daemon/jsvc.html). For the options that don't take an argument, for example -nodetach, the value in the clojure map will be ignored. 
 
 Lein's :jvm-opts and classpath (:source-path, :jar-dir, etc) specified in project.clj will also be passed to jsvc.
 
